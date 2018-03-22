@@ -34,10 +34,10 @@
 
 ---
 
-# Hello World!
+## Hello World!
 
 ```yml
----
+
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description:
@@ -52,3 +52,7 @@ Resources:
       AvailabilityZone: 'us-east-2a'
 
 ```
+
+@[2](You can present code inlined within your slide markdown too.)
+@[4,5](Displayed using code-syntax highlighting just like your IDE.)
+@[7-13](Again, all of this without ever leaving your slideshow.)
