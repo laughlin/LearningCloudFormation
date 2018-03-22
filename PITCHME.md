@@ -72,9 +72,18 @@ First we need to create a Key Pair for authentication:
 ---
 
 ## Lesson Two
-#### Connecting over SSH - Mac
+#### Allow SSH Connections
 
-Now that we have the .pem file we can access our instance.
+1. EC2 Dashboard
+1. Network & Security
+1. Select Security Group
+1. Inboud traffic
+1. Edit - add ssh rule
+
+---
+
+## Lesson Two
+#### Connecting over SSH - Mac
 
 <p><span class="menu-title slide-title">~/.ssh/config</span></p>
 ```
@@ -87,24 +96,28 @@ Host lunchLearn
 
 @[1](Custom Name)
 @[2](HostName of your instance)
-@[3](Instance usr)
+@[3](Default User for our instance type)
+@[4](Filepath of your saved .pem file)
+@[5](Force SSH to use the .pem file)
 
 ---
 
 ## Lesson Two
 #### Connecting over SSH - Windows
 
-Now that we have the .pem file we can access our instance.
-<br>
-For windows this involves the wonderful tool Putty.
-<br>
-Amazon has wonderful instructions [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html), but can be summed up as:
+Amazon has wonderful Putty instructions [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html), but can be summed up as:
 
 1. Convert the .pem file to a .ppk
   1. Launch Puttygen
   1. Generate an RSA
   1. Load the .pem file
   1. Safely save the private key
+
+---
+
+## Lesson Two
+#### Connection over SSH - Windows Part 2
+
 1. Create a new Putty connection using `ubutu@hostname`
 1. Change the connection type to SSH and port 22
 1. Under Connection -> SSH -> Auth, add your newly created ppk
@@ -126,15 +139,5 @@ Resources:
 ```
 
 @[1-7](The familiar EC2 syntax)
-@[8](The Authetication Key Added)
+@[8](The Authetication Key Association)
 
----
-
-## Lesson Two
-#### Allow SSH Connections
-
-1. EC2 Dashboard
-1. Network & Security
-1. Select Security Group
-1. Inboud traffic
-1. Edit - add ssh rule
