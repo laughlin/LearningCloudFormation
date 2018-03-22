@@ -5,7 +5,7 @@ Description:
   'Basic EC2'
 
 Resources:
-  MyEC2:
+  Frodo:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId: 'ami-965e6bf3'
