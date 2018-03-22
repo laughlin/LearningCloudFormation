@@ -1,0 +1,107 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description:
+  'Basic EC2'
+
+Parameters:
+  ImageId:
+    Type: 'AWS::EC2::Image::Id'
+    Default: 'ami-10547475'
+    Description: EC2 images
+
+  InstanceType:
+    Type: String
+    Default: 't2.micro'
+
+  FrodoAvailability:
+    Type: 'AWS::EC2::AvailabilityZone::Name'
+    Default: 'us-east-2a'
+
+  SamAvailability:
+    Type: 'AWS::EC2::AvailabilityZone::Name'
+    Default: 'us-east-2b'
+
+  SecurityKey:
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+
+  Subnets:
+    Type: 'List<AWS::EC2::Subnet::Id>'
+    Default: 'subnet-7f971e17,subnet-d8e120a2'
+
+  SecurityGroups:
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+    Description: List of comma separated Security Group Ids
+    Default: sg-4e387825
+    
+  VpcId:
+    Type: String
+    Default: 'vpc-6f128607'
+
+Resources:
+  Frodo:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      AvailabilityZone: 
+        Ref: FrodoAvailability
+      KeyName: 
+        Ref: SecurityKey
+
+  Sam:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId:
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      AvailabilityZone:
+        Ref: SamAvailability
+      KeyName:
+        Ref: SecurityKey
+
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: 'll-balancer'
+      SecurityGroups: 
+        Ref: SecurityGroups
+      Type: application
+      Subnets: 
+        Ref: Subnets
+
+  LoadTarget:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: 'LL-load-target'
+      Port: 80
+      Protocol: HTTP
+      VpcId: 
+        Ref:
+          VpcId
+      Targets:
+        - 
+          Id: 
+            Ref: Frodo
+          Port: 80
+        - 
+          Id:
+            Ref: Sam
+          Port: 80
+
+  ReviewHttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: LoadTarget
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP

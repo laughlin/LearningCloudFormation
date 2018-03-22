@@ -306,3 +306,181 @@ sudo service apache2 restart
 #### It Works!
 
 Navigating to the Load Balancers public dns name will now redirect you to one of your two hosts!
+
+---
+
+## Lesson Five
+#### Going Green
+
+Our simple script has grown quite a bit, but it's looking pretty ugly.
+
+Lots of naked strings, gross.
+
+How can we simplify this?
+
+---
+
+## Lesson Five
+#### Parameters
+
+CloudFormation has a parameter section that allows you add modifications at stack creation.
+
+```
+Parameters:
+  ParametnerName:
+    Type: # String and number are the most common
+    Description: # What is this parameter?
+    Default: # what should this be
+    # And Various Constraints
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+Parameters:
+  ImageId:
+    Type: 'AWS::EC2::Image::Id'
+    Default: 'ami-10547475'
+    Description: EC2 images
+
+  InstanceType:
+    Type: String
+    Default: 't2.micro'
+
+  FrodoAvailability:
+    Type: 'AWS::EC2::AvailabilityZone::Name'
+    Default: 'us-east-2a'
+
+  SamAvailability:
+    Type: 'AWS::EC2::AvailabilityZone::Name'
+    Default: 'us-east-2b'
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+  SecurityKey:
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+
+  Subnets:
+    Type: 'List<AWS::EC2::Subnet::Id>'
+    Default: 'subnet-7f971e17,subnet-d8e120a2'
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+  SecurityGroups:
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+    Description: List of comma separated Security Group Ids
+    Default: sg-4e387825
+    
+  VpcId:
+    Type: String
+    Default: 'vpc-6f128607'
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+Resources:
+  Frodo:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      AvailabilityZone: 
+        Ref: FrodoAvailability
+      KeyName: 
+        Ref: SecurityKey
+
+  Sam:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId:
+        Ref: ImageId
+      InstanceType: 
+        Ref: InstanceType
+      AvailabilityZone:
+        Ref: SamAvailability
+      KeyName:
+        Ref: SecurityKey
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: 'll-balancer'
+      SecurityGroups: 
+        Ref: SecurityGroups
+      Type: application
+      Subnets: 
+        Ref: Subnets
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+  LoadTarget:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: 'LL-load-target'
+      Port: 80
+      Protocol: HTTP
+      VpcId: 
+        Ref:
+          VpcId
+      Targets:
+        - 
+          Id: 
+            Ref: Frodo
+          Port: 80
+        - 
+          Id:
+            Ref: Sam
+          Port: 80
+```
+
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
+  ReviewHttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: LoadTarget
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP
+```

@@ -12,7 +12,6 @@ Resources:
       InstanceType: 't2.micro'
       AvailabilityZone: 'us-east-2a'
       KeyName: 'Lunch&Learn'
-      SubnetId: ''
 
   Sam:
     Type: 'AWS::EC2::Instance'
