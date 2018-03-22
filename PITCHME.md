@@ -53,6 +53,8 @@ Resources:
 
 ```
 
-@[2](You can present code inlined within your slide markdown too.)
-@[4,5](Displayed using code-syntax highlighting just like your IDE.)
-@[7-13](Again, all of this without ever leaving your slideshow.)
+@[2](Define the CloudFormation Sytax Version.)
+@[4,5](Stack Description)
+@[7-13](An EC2 Instance, all free)
+
+--- 
