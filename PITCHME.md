@@ -174,18 +174,16 @@ sudo service apache2 restart
 --- 
 
 ## Lesson Four
-#### Oh No! Your website got the reddit hug of death!
+#### Oh No! You're too popular!
 
 Q: How can we compensate for too much traffic?
 
 ---
 
 ## Lesson Four
-#### Oh No! Your website got the reddit hug of death!
+#### Oh No! You're too popular!
 
 A: By adding more hosts
-<br>
-Easy Peasy
 ```
 Resources:
   Frodo:
@@ -201,7 +199,7 @@ Resources:
     Properties:
       ImageId: 'ami-965e6bf3'
       InstanceType: 't2.micro'
-      AvailabilityZone: 'us-east-2a'
+      AvailabilityZone: 'us-east-2b'
       KeyName: 'Lunch&Learn'
 ```
 
@@ -233,11 +231,13 @@ The ELB has three parts:
       SecurityGroups: 
         - # your Security Group
       Type: application
-      Subnets: # your subnet id
+      Subnets: 
+        - # your subnet A
+        - # your subnet B
 ```
 
-@[5](Can be found in the AWS EC2 console under Security Groups)
-@[7](Can be found in the AWS EC2 console under Network Interfaces)
+@[5,6](Can be found in the AWS EC2 console under Security Groups)
+@[8-10](Can be found in the AWS CPV console under subnets)
 
 ---
 
@@ -248,7 +248,7 @@ The ELB has three parts:
   LoadTarget:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: 'LL-load-target'
+      Name: 'll-load-target'
       Port: 80
       Protocol: HTTP
       VpcId: # your VPC Id
