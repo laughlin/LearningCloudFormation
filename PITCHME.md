@@ -7,7 +7,7 @@
 # Overview
 
 * What is Amazon Web Services?
-* What is CloudFormation?
+* What is CloudFormation and why?
 * Setup
 * Run through some code...
 
@@ -23,6 +23,8 @@
 # What is CloudFormation
 
 * Scripting Stack creation
+* Allows versioning
+* All your hardwhere setup lives in one place
 
 ---
 
@@ -349,7 +351,14 @@ Parameters:
   InstanceType:
     Type: String
     Default: 't2.micro'
+```
 
+---
+
+## Lesson Five
+#### How does this change our code?
+
+```
   FrodoAvailability:
     Type: 'AWS::EC2::AvailabilityZone::Name'
     Default: 'us-east-2a'
@@ -380,11 +389,12 @@ Parameters:
 ## Lesson Five
 #### How does this change our code?
 
+
 ```
   SecurityGroups:
     Type: 'List<AWS::EC2::SecurityGroup::Id>'
     Description: List of comma separated Security Group Ids
-    Default: sg-4e387825
+    Default: 'sg-4e387825'
     
   VpcId:
     Type: String
@@ -484,3 +494,26 @@ Resources:
       Port: 80
       Protocol: HTTP
 ```
+
+---
+
+## What could be next?
+
+* Changing the EC2s to an ASG
+* Adding Code Deploy to handle help with deployments
+* Adding an Elastic File System to share files across your EC2s
+* Added Databases
+* Custom VPC
+* Nearly anything on AWS
+
+---
+
+## Resources
+
+* [Resource Types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+* [Parameter Documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html)
+* [CloudFormation Dev Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+
+---
+
+## Questions?
