@@ -1,0 +1,63 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description:
+  'Basic EC2'
+
+Resources:
+  Frodo:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-965e6bf3'
+      InstanceType: 't2.micro'
+      AvailabilityZone: 'us-east-2a'
+      KeyName: 'Lunch&Learn'
+      SubnetId: ''
+
+  Sam:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-965e6bf3'
+      InstanceType: 't2.micro'
+      AvailabilityZone: 'us-east-2b'
+      KeyName: 'Lunch&Learn'
+
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: 'll-balancer'
+      SecurityGroups: 
+        - 'sg-4e387825'
+      Type: application
+      Subnets: 
+        - 'subnet-7f971e17'
+        - 'subnet-d8e120a2'
+
+  LoadTarget:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: 'LL-load-target'
+      Port: 80
+      Protocol: HTTP
+      VpcId: 'vpc-6f128607'
+      Targets:
+        - 
+          Id: 
+            Ref: Frodo
+          Port: 80
+        - 
+          Id:
+            Ref: Sam
+          Port: 80
+
+  ReviewHttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: LoadTarget
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP

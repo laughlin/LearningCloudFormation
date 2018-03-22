@@ -141,3 +141,168 @@ Resources:
 @[1-7](The familiar EC2 syntax)
 @[8](The Authetication Key Association)
 
+---
+
+## Lesson Three
+#### Now what?
+
+Let's set up a simple web server!
+
+---
+
+## Lesson Three
+#### Apache
+
+```bash
+sudo apt-get update
+sudo apt-get install apache2
+sudo service apache2 restart
+```
+
+---
+
+## Lesson Three
+#### Enable HTTP Connections
+
+1. EC2 Dashboard
+1. Network & Security
+1. Select Security Group
+1. Inboud traffic
+1. Edit - add HTTP rule
+1. Visit your new site!
+
+--- 
+
+## Lesson Four
+#### Oh No! Your website got the reddit hug of death!
+
+Q: How can we compensate for too much traffic?
+
+---
+
+## Lesson Four
+#### Oh No! Your website got the reddit hug of death!
+
+A: By adding more hosts
+<br>
+Easy Peasy
+```
+Resources:
+  Frodo:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-965e6bf3'
+      InstanceType: 't2.micro'
+      AvailabilityZone: 'us-east-2a'
+      KeyName: 'Lunch&Learn'
+
+  Sam:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-965e6bf3'
+      InstanceType: 't2.micro'
+      AvailabilityZone: 'us-east-2a'
+      KeyName: 'Lunch&Learn'
+```
+
+---
+
+## Lesson Four
+#### Share the Load, Mr Frodo.
+
+We need to split the load between our hosts.
+<br>
+<br>
+We can do that by adding an Elastic Load Balancer.
+<br>
+<br>
+The ELB has three parts:
+* The Load Balancer
+* The Target Group
+* The Listener
+
+---
+
+## Lesson Four
+#### Elastic Load Balancer: Creating a Load Balancer
+```
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: 'll-balancer'
+      SecurityGroups: 
+        - # your Security Group
+      Type: application
+      Subnets: # your subnet id
+```
+
+@[5](Can be found in the AWS EC2 console under Security Groups)
+@[7](Can be found in the AWS EC2 console under Network Interfaces)
+
+---
+
+## Lesson Four
+#### Elastic Load Balancer: The Load Target
+
+```
+  LoadTarget:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: 'LL-load-target'
+      Port: 80
+      Protocol: HTTP
+      VpcId: # your VPC Id
+      Targets:
+        - 
+          Id: 
+            Ref: Frodo
+          Port: 80
+        - 
+          Id:
+            Ref: Sam
+          Port: 80
+```
+
+@[5](The recieving port)
+@[8-12](Your target hosts)
+
+---
+
+## Lesson Four
+#### Elastic Load Balancer: Listening for Traffic
+
+```
+  ReviewHttpListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: LoadTarget
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP
+```
+
+---
+
+## Lesson Four
+#### Manually deploying to the new host
+
+Just like before, we can add our new host to our ssh configurations.
+
+SSH to it, and install apache.
+
+```bash
+sudo apt-get update
+sudo apt-get install apache2
+sudo service apache2 restart
+```
+
+---
+
+## Lesson Four
+#### It Works!
+
+Navigating to the Load Balancers public dns name will now redirect you to one of your two hosts!
